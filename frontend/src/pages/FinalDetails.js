@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const FinalDetails = () => {
   const navigate = useNavigate();
@@ -12,10 +13,64 @@ export const FinalDetails = () => {
   };
   const [isChecked, setIsChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
+  const [carDetails, setCarDetails] = useState({});
+  const [userDetails, setUserDetails] = useState({});
+  const path = window.location.pathname.split("/");
+  const details = path[path.length - 1];
+  const search = window.location.search.split("&");
+  const pickUpDate = search[1].split("=")[1];
+  const returnDate = search[3].split("=")[1];
+  const carCategories = search[5].split("=")[1];
+  const insurance = Number(search[6].split("=")[1]);
+  const hasDriver = search[7].split("=")[1];
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = "http://localhost:8000/car/retrieve/" + details;
+      const method = "GET";
+      const header = {
+        "Content-Type": "application/json",
+        "x-auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+      };
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: header,
+        });
+        const data = await response.json();
+        setCarDetails(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = "http://localhost:8000/user/retrieve/" + user;
+      const method = "GET";
+      const header = {
+        "Content-Type": "application/json",
+        "x-auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+      };
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: header,
+        });
+        const data = await response.json();
+        setUserDetails(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleConfirmClick = () => {
     if (!isChecked) {
@@ -52,33 +107,57 @@ export const FinalDetails = () => {
             <div className="bg-light flex flex-col justify-center px-10">
               {/* Your booking details */}
               <h2 className="text-center pt-3 pb-5 text-primary text-xl font-bold">
-                ID# LABC123
+                USER ID# {user}
               </h2>
               <div className="flex flex-col sm:flex-row justify-between font-bold">
-                <p>Name: Drei Loreto</p>
-                <p>Booking ID: LABC123</p>
+                <p>
+                  Name:{" "}
+                  {userDetails.firstname +
+                    " " +
+                    (userDetails.middlename ? userDetails.middlename : "") +
+                    " " +
+                    userDetails.lastname +
+                    " " +
+                    (userDetails.suffix ? userDetails.suffix : "")}
+                </p>
+                <p>Car ID: {details}</p>
               </div>
               <div className="flex flex-col sm:flex-row justify-between font-bold">
-                <p>Car Type: Luxury</p>
-                <p>Pick-Up Date: June 28, 2023</p>
+                <p>Car Type: {carCategories}</p>
+                <p>Pick-Up Date: {pickUpDate}</p>
               </div>
               <div className="flex flex-col sm:flex-row justify-between font-bold">
-                <p>Unit: Testla Model Y</p>
-                <p>Return Date: June 28, 2023</p>
+                <p>Unit: {carDetails.carname}</p>
+                <p>Return Date: {returnDate}</p>
               </div>
               <div className="flex flex-col sm:flex-row justify-between font-bold">
-                <p>Daily Price: Php 20,000</p>
-                <p>Total Days: 2 Days</p>
+                <p>Daily Price: Php {carDetails.initialrateperday}</p>
+                <p>
+                  Total Days:{" "}
+                  {(Date.parse(returnDate) - Date.parse(pickUpDate)) /
+                    86400000 +
+                    1}{" "}
+                  Days
+                </p>
               </div>
               <div className="flex flex-col sm:flex-row justify-between font-bold">
-                <p>Cargo Protect: Yes</p>
-                <p>Driving Preference: Self-Drive</p>
+                <p>Cargo Protect: {insurance === 0 ? "No" : "Yes"}</p>
+                <p>
+                  Driving Preference:{" "}
+                  {hasDriver === "false" ? "Self-Drive" : "Have a Driver"}
+                </p>
               </div>
               <h2 className="py-5 text-center text-primary font-bold text-2xl">
                 Total Rent Price
               </h2>
               <h2 className="py-5 text-center text-primary font-bold text-2xl">
-                Php 45,500
+                Php{" "}
+                {carDetails.initialrateperday *
+                  ((Date.parse(returnDate) - Date.parse(pickUpDate)) /
+                    86400000 +
+                    1) +
+                  500 +
+                  insurance}
               </h2>
               {/* End of booking details */}
 

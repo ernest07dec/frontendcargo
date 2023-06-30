@@ -2,6 +2,7 @@ import { FaBuilding } from "react-icons/fa";
 import Upload from "../assets/icons/upload-icon.png";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const Driver = () => {
   const navigate = useNavigate();
@@ -17,6 +18,12 @@ export const Driver = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const path = window.location.pathname.split("/");
+  const details = path[path.length - 1];
+  const search = window.location.search.split("&");
+  const pickUpDate = search[1].split("=")[1];
+  const returnDate = search[3].split("=")[1];
+  const insurance = Number(search[6].split("=")[1]);
   const handleSelfDriveChange = () => {
     setSelfDrive(true);
     setHireDriver(false);
@@ -40,6 +47,30 @@ export const Driver = () => {
     setSelfDrive(false);
     setIsChecked(false);
   };
+  const [carDetails, setCarDetails] = useState({});
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = "http://localhost:8000/car/retrieve/" + details;
+      const method = "GET";
+      const header = {
+        "Content-Type": "application/json",
+        "x-auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+      };
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: header,
+        });
+        const data = await response.json();
+        setCarDetails(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchData();
+  }, []);
+  const nextLink = `/finaldetails/${carDetails._id}${window.location.search}&hasDriver=false&firstname=NA&middlename=NA&lastname=NA&suffix=NA&birthday=NA&age=NA&nationality=NA&phonenumber=NA&email=NA&driverslicensenumber=NA&imageupload=NA`;
 
   // Information
   const [firstName, setFirstName] = useState("");
@@ -178,7 +209,7 @@ export const Driver = () => {
     <div>
       <div className="bg-shade py-40">
         <div
-          className="mx-auto md:w-11/12 rounded-lg bg-cyan-600 z-40 relative bottom-16 sm:bottom-10 px-2 lg:px-5 xl:px-5 py-5 mb-5"
+          className="mx-auto md:w-11/12 rounded-lg bg-cyan-600 z-40 relative bottom-16 sm:bottom-10 px-2 lg:px-5 xl:px-5 py-5 mb-5 hidden"
           id="filter"
         >
           <form action="">
@@ -509,59 +540,81 @@ export const Driver = () => {
             </form>
           </div>
 
-          <div className="border border-card bg-light h-max rounded-2xl sticky top-20">
-            <h2 className="text-primary text-xl px-12 pt-2 pb-4 font-bold text-center">
-              Price Breakdown
-            </h2>
-            <form action="">
-              <div className="px-3">
-                <h2 className="font-bold">Booking Duration</h2>
-                <hr className="border-t-2 border-black pb-1" />
-                <div className="flex justify-between">
-                  <p>Pick-up:</p>
-                  <p>June 28, 2023 </p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Drop-Off:</p>
-                  <p>June 30, 2023</p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Total Days:</p>
-                  <p>2 Days</p>
-                </div>
-                <div className="flex justify-between">
-                  <p className="font-bold pb-5">Subtotal:</p>
-                  <p>Php 40,000</p>
-                </div>
+          <div>
+            <div className="border border-card bg-light h-max rounded-2xl sticky top-20">
+              <h2 className="text-primary text-xl px-12 pt-2 pb-4 font-bold text-center">
+                Price Breakdown
+              </h2>
+              <form action="">
+                <div className="px-3">
+                  <h2 className="font-bold">Booking Duration</h2>
+                  <hr className="border-t-2 border-black pb-1" />
+                  <div className="flex justify-between">
+                    <p>Pick-up:</p>
+                    <p>{pickUpDate}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>Drop-Off:</p>
+                    <p>{returnDate}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>Total Days:</p>
+                    <p>
+                      {(Date.parse(returnDate) - Date.parse(pickUpDate)) /
+                        86400000 +
+                        1}{" "}
+                      Days
+                    </p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="font-bold pb-5">Subtotal:</p>
+                    <p>
+                      Php{" "}
+                      {carDetails.initialrateperday *
+                        ((Date.parse(returnDate) - Date.parse(pickUpDate)) /
+                          86400000 +
+                          1)}
+                    </p>
+                  </div>
 
-                <h2 className="font-bold">Other Fees</h2>
-                <hr className="border-t-2 border-black pb-1" />
-                <div className="flex justify-between">
-                  <p>Drop-Off Fee:</p>
-                  <p>Php 500</p>
+                  <h2 className="font-bold">Other Fees</h2>
+                  <hr className="border-t-2 border-black pb-1" />
+                  <div className="flex justify-between">
+                    <p>Drop-Off Fee:</p>
+                    <p>Php 500</p>
+                  </div>
+                  <h2>Add-Ons:</h2>
+                  {insurance === 500 ? (
+                    <div className="flex justify-between">
+                      <p className="pl-3 pb-7">Cargo Protect</p>
+                      <p>Php {insurance}</p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  <div className="flex justify-between pb-5">
+                    <p className="font-bold text-2xl">Total:</p>
+                    <p className="text-xl">
+                      Php{" "}
+                      {carDetails.initialrateperday *
+                        ((Date.parse(returnDate) - Date.parse(pickUpDate)) /
+                          86400000 +
+                          1) +
+                        500 +
+                        insurance}
+                    </p>
+                  </div>
+                  <div className="text-center pb-4">
+                    <NavLink to={user ? nextLink : "/signin"}>
+                      <button className="py-1 px-10 bg-button text-white rounded-lg">
+                        Continue
+                      </button>
+                    </NavLink>
+                  </div>
                 </div>
-                <h2>Add-Ons:</h2>
-                <div className="flex justify-between">
-                  <p className="pl-3 pb-7">Cargo Protect</p>
-                  <p>Php 5,000</p>
-                </div>
-                <div className="flex justify-between pb-5">
-                  <p className="font-bold text-2xl">Total:</p>
-                  <p className="text-xl">Php 45,500</p>
-                </div>
-                <div className="text-center pb-4">
-                  <NavLink to="/finaldetails">
-                    {" "}
-                    <button
-                      className="py-1 px-10 bg-button text-white rounded-lg"
-                      onClick={handleSubmit}
-                    >
-                      Continue
-                    </button>
-                  </NavLink>
-                </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>{" "}

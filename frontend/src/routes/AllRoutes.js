@@ -38,9 +38,9 @@ export const AllRoutes = () => {
         <Route path="family" element={<Family />}></Route>
         <Route path="casual" element={<Casual />}></Route>
         <Route path="testimonial" element={<Testimonial />}></Route>
-        <Route path="driver" element={<Driver />}></Route>
+        <Route path="driver/:id" element={<Driver />}></Route>
         <Route path="signup" element={<SignUp />}></Route>
-        <Route path="finaldetails" element={<FinalDetails />}></Route>
+        <Route path="finaldetails/:id" element={<FinalDetails />}></Route>
         <Route path="bookingconfirm" element={<BookingConfirm />}></Route>
         <Route path="branches" element={<Branches />}></Route>
         <Route path="cardetails/:id" element={<CarDetails />}></Route>

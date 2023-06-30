@@ -72,7 +72,7 @@ export const Home = () => {
                     name="location"
                     placeholder="Pick-up Branch"
                   >
-                    <option disabled  value="Pick-up Branch">
+                    <option disabled value="Pick-up Branch">
                       Branch
                     </option>
                     <option value="Manila">Manila</option>
@@ -105,7 +105,7 @@ export const Home = () => {
               </div>
 
               {/* Pick-up Time */}
-              <div className="flex justify-center items-center rounded-lg bg-white">
+              <div className="flex justify-center items-center rounded-lg bg-white hidden">
                 <div className="flex flex-col justify-center">
                   <label
                     htmlFor="pickupTime"
@@ -141,7 +141,7 @@ export const Home = () => {
               </div>
 
               {/* Return Time */}
-              <div className="flex justify-center items-center rounded-lg bg-white">
+              <div className="flex justify-center items-center rounded-lg bg-white hidden">
                 <div className="flex flex-col justify-center">
                   <label
                     htmlFor="pickupTime"

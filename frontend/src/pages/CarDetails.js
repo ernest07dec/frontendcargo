@@ -23,16 +23,14 @@ export const CarDetails = () => {
   const [showProtect2, setShowProtect2] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showMessage1, setShowMessage1] = useState(false);
+  const [insurance, setInsurance] = useState(0);
   const [carDetails, setCarDetails] = useState({});
+
   const path = window.location.pathname.split("/");
   const details = path[path.length - 1];
   const search = window.location.search.split("&");
-  const location = search[0].split("=")[1];
   const pickUpDate = search[1].split("=")[1];
-  const pickUpTime = search[2].split("=")[1];
   const returnDate = search[3].split("=")[1];
-  const returnTime = search[4].split("=")[1];
-  const carType = search[5].split("=")[1];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,12 +60,7 @@ export const CarDetails = () => {
   const user = localStorage.getItem("user");
   console.log(user);
 
-  const nextLink = `/driver${window.location.search}&totalprice=${(
-    carDetails.initialrateperday *
-      ((Date.parse(returnDate) - Date.parse(pickUpDate)) / 86400000 + 1) +
-    500 +
-    1000
-  ).toString()}`;
+  const nextLink = `/driver/${carDetails._id}${window.location.search}&addOns=${insurance}`;
 
   const toggleMessage = () => {
     setShowMessage(!showMessage);
@@ -503,12 +496,24 @@ export const CarDetails = () => {
                   </p>
                   <div className="flex gap-2 pb-10">
                     <div>
-                      <button className="py-1 px-12 bg-button rounded-xl text-white font-semibold">
+                      <button
+                        className="py-1 px-12 bg-button rounded-xl text-white font-semibold"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setInsurance(500);
+                        }}
+                      >
                         ADD
                       </button>
                     </div>
                     <div>
-                      <button className="py-1 px-10 bg-others rounded-xl text-primary font-semibold">
+                      <button
+                        className="py-1 px-10 bg-others rounded-xl text-primary font-semibold"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setInsurance(0);
+                        }}
+                      >
                         REMOVE
                       </button>
                     </div>
@@ -562,10 +567,15 @@ export const CarDetails = () => {
                     <p>Php 500</p>
                   </div>
                   <h2>Add-Ons:</h2>
-                  <div className="flex justify-between">
-                    <p className="pl-3 pb-7">Cargo Protect</p>
-                    <p>Php 1000</p>
-                  </div>
+                  {insurance === 500 ? (
+                    <div className="flex justify-between">
+                      <p className="pl-3 pb-7">Cargo Protect</p>
+                      <p>Php {insurance}</p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
                   <div className="flex justify-between pb-5">
                     <p className="font-bold text-2xl">Total:</p>
                     <p className="text-xl">
@@ -575,7 +585,7 @@ export const CarDetails = () => {
                           86400000 +
                           1) +
                         500 +
-                        1000}
+                        insurance}
                     </p>
                   </div>
                   <div className="text-center pb-4">

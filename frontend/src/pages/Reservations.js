@@ -160,7 +160,7 @@ export const Reservations = () => {
                 </div>
 
                 {/* Pick-up Time */}
-                <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex justify-center items-center rounded-lg bg-white hidden">
                   <div className="flex flex-col text-center py-1 justify-center relative">
                     <label htmlFor="pickupDate" className=" text-lg font-bold">
                       Pickup Time:
@@ -189,7 +189,7 @@ export const Reservations = () => {
                 </div>
 
                 {/* Return Time */}
-                <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex justify-center items-center rounded-lg bg-white hidden">
                   <div className="flex flex-col text-center py-1 justify-center relative">
                     <label htmlFor="pickupDate" className=" text-lg font-bold">
                       Return Time:
