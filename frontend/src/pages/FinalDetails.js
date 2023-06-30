@@ -77,12 +77,68 @@ export const FinalDetails = () => {
       setShowModal(true);
     } else {
       console.log("Booking confirmed!");
-      navigate("/bookingconfirm"); // Redirect to the desired page
+      handleBook();
     }
   };
 
   const closeModal = () => {
     setShowModal(false);
+  };
+  const formData = {
+    userid: user,
+    carid: details,
+    cartype: carCategories,
+    datetimestart: Date.parse(pickUpDate),
+    datetimefinish: Date.parse(returnDate),
+    paymentstatus: "Pending",
+    totalpayment:
+      carDetails.initialrateperday *
+        ((Date.parse(returnDate) - Date.parse(pickUpDate)) / 86400000 + 1) +
+      500 +
+      insurance,
+    totalpaid: 0,
+    reservationstatus: "Pending",
+    remarks: "",
+    insurance: insurance === 0 ? "false" : "true",
+    hasdriver: hasDriver,
+    driverfirstname: "firstName",
+    driverlastname: "lastName",
+    drivermiddlename: "middleName",
+    driverextension: "suffix",
+    driverbirthday: "birthdate",
+    driverage: "age",
+    drivernationality: "nationality",
+    driverphonenumber: "phoneNumber",
+    driveremail: "email",
+    driverlicenseno: "licenseno",
+    driverlicenseimg: "licenseimg",
+  };
+
+  const handleBook = async () => {
+    try {
+      let url = "http://localhost:8000/reservation/create";
+      let method = "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        console.log("Data saved successfully");
+        // setSubmittedData(formData);
+        navigate("/bookingconfirm"); // Redirect to the desired page
+      } else {
+        console.log("Error saving data");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
 
   return (
