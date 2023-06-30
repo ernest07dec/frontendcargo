@@ -1,0 +1,586 @@
+import { FaBuilding } from "react-icons/fa";
+import Upload from "../assets/icons/upload-icon.png";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+
+export const Driver = () => {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
+  const [selfDrive, setSelfDrive] = useState(false);
+  const [hireDriver, setHireDriver] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSelfDriveChange = () => {
+    setSelfDrive(true);
+    setHireDriver(false);
+    setIsChecked(false);
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setSuffix("");
+    setBirthdate("");
+    setAge("");
+    setNationality("");
+    setPhoneNumber("");
+    setEmail("");
+    setDriverLicenseNumber("");
+    setFormErrors("");
+    setLicenseIdPhoto("");
+  };
+
+  const handleHireDriverChange = () => {
+    setHireDriver(true);
+    setSelfDrive(false);
+    setIsChecked(false);
+  };
+
+  // Information
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [age, setAge] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [driverLicenseNumber, setDriverLicenseNumber] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [licenseIdPhoto, setLicenseIdPhoto] = useState(null);
+
+  const handleFirstNameChange = (event) => {
+    setFirstName(event.target.value);
+  };
+
+  const handleMiddleNameChange = (event) => {
+    setMiddleName(event.target.value);
+  };
+
+  const handleLastNameChange = (event) => {
+    setLastName(event.target.value);
+  };
+
+  const handleSuffixChange = (event) => {
+    setSuffix(event.target.value);
+  };
+
+  const handleBirthdateChange = (event) => {
+    setBirthdate(event.target.value);
+  };
+
+  const handleAgeChange = (event) => {
+    setAge(event.target.value);
+  };
+
+  const handleNationalityChange = (event) => {
+    setNationality(event.target.value);
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    setPhoneNumber(event.target.value);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleDriverLicenseNumberChange = (event) => {
+    setDriverLicenseNumber(event.target.value);
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0]; // Get the uploaded file
+    setLicenseIdPhoto(file); // Store the uploaded file in state
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!firstName.trim()) {
+      errors.firstName = "First Name is required";
+    }
+    if (!lastName.trim()) {
+      errors.lastName = "Last Name is required";
+    }
+    if (!birthdate.trim()) {
+      errors.birthdate = "Birthdate is required";
+    }
+    if (!age.trim()) {
+      errors.age = "Age is required";
+    }
+    if (!nationality.trim()) {
+      errors.nationality = "Nationality is required";
+    }
+    if (!phoneNumber.trim()) {
+      errors.phoneNumber = "PhoneNumber is required";
+    }
+    if (!email.trim()) {
+      errors.email = "Email is required";
+    } else {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(email)) {
+        errors.email = "Invalid email format";
+      }
+    }
+    if (!driverLicenseNumber.trim()) {
+      errors.driverLicenseNumber = "Driverlicense is required";
+    } else {
+      const licenseNumberPattern = /^[A-Z0-9]{8}$/;
+
+      if (!licenseNumberPattern.test(driverLicenseNumber)) {
+        errors.driverLicenseNumber = "Invalid Driver License Number format";
+        console.log(!licenseNumberPattern.test(driverLicenseNumber));
+      }
+    }
+
+    // Add validation rules for other fields...
+    setFormErrors(errors);
+    // Return true if the form is valid (no errors)
+    return Object.keys(errors).length === 0;
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!hireDriver && !selfDrive) {
+      setShowModal(true);
+    } else if (selfDrive) {
+      navigate("/finaldetails");
+      return;
+    } else if (validateForm()) {
+      navigate("/finaldetails");
+    }
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0]; // Get the dropped file
+    setLicenseIdPhoto(file); // Store the dropped file in state
+  };
+
+  return (
+    <div>
+      <div className="bg-shade py-40">
+        <div
+          className="mx-auto md:w-11/12 rounded-lg bg-cyan-600 z-40 relative bottom-16 sm:bottom-10 px-2 lg:px-5 xl:px-5 py-5 mb-5"
+          id="filter"
+        >
+          <form action="">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-1 justify-center items-center">
+              {/* Car specs */}
+              <div className="flex justify-center items-center rounded-lg bg-white py-2 col-span-2 lg:col-span-1">
+                <div className="relative">
+                  <select
+                    className="rounded-lg pl-8 focus:ring-0 border-none"
+                    id="location"
+                    name="location"
+                    placeholder="Pick-up Branch"
+                  >
+                    <option disabled value="">
+                      Branch
+                    </option>
+                    <option value="Manila">Manila</option>
+                    <option value="Pasay">Pasay</option>
+                    <option value="Pasig">Pasig</option>
+                    <option value="Makati">Makati</option>
+                  </select>
+                  <div className="absolute top-2 left-1">
+                    <FaBuilding size="1.5rem" className="text-primary" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pick-up Date */}
+              <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex flex-col justify-center relative">
+                  <label
+                    htmlFor="pickupDate"
+                    className="pt-2 text-sm font-bold"
+                  >
+                    Pickup Date:
+                  </label>
+                  <input
+                    className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                    type="date"
+                    id="pickupDate"
+                    name="pickupDate"
+                  />
+                </div>
+              </div>
+
+              {/* Pick-up Time */}
+              <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex flex-col justify-center">
+                  <label
+                    htmlFor="pickupTime"
+                    className="pt-2 text-sm font-bold"
+                  >
+                    Time:
+                  </label>
+                  <input
+                    className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                    type="time"
+                    id="pickupTime"
+                    name="pickupTime"
+                  />
+                </div>
+              </div>
+
+              {/* Return Date */}
+              <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex flex-col justify-center">
+                  <label
+                    htmlFor="returnDate"
+                    className="pt-2 text-sm font-bold"
+                  >
+                    Return Date:
+                  </label>
+                  <input
+                    className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                    type="date"
+                    id="returnDate"
+                    name="returnDate"
+                  />
+                </div>
+              </div>
+
+              {/* Return Time */}
+              <div className="flex justify-center items-center rounded-lg bg-white">
+                <div className="flex flex-col justify-center">
+                  <label
+                    htmlFor="returnTime"
+                    className="pt-2 text-sm font-bold"
+                  >
+                    Time:
+                  </label>
+                  <input
+                    className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                    type="time"
+                    id="returnTime"
+                    name="returnTime"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div className="container __grid">
+          <div className="bg-light px-8 rounded-2xl">
+            <form action="">
+              <div>
+                <h2 className="text-primary text-2xl font-bold pb-5 pt-8">
+                  Driving Preference
+                </h2>
+                <p className="font-bold pb-3">Choose from the options below:</p>
+              </div>
+
+              <div>
+                <div className="pl-5 pb-4">
+                  <input
+                    type="checkbox"
+                    id="selfDriveCheckbox"
+                    checked={selfDrive}
+                    onChange={handleSelfDriveChange}
+                    className="mr-5"
+                  />
+                  <label htmlFor="selfDriveCheckbox">Self Drive</label>
+                </div>
+
+                <div className="pl-5 pb-4">
+                  <input
+                    type="checkbox"
+                    id="hireDriverCheckbox"
+                    checked={hireDriver}
+                    onChange={handleHireDriverChange}
+                    className="mr-5"
+                  />
+                  <label htmlFor="hireDriverCheckbox">Hire a Driver</label>
+                </div>
+              </div>
+
+              {hireDriver && (
+                <div>
+                  <h2 className="text-primary text-2xl pb-4 font-bold">
+                    Information
+                  </h2>
+                  <h3 className="font-bold text-2xl pb-4">Main Driver</h3>
+                  <div className="px-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                    <div>
+                      <label htmlFor="firstName">First Name:</label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={firstName}
+                        onChange={handleFirstNameChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.firstName && (
+                        <p className="text-red-500">{formErrors.firstName}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="middleName">Middle Name:</label>
+                      <input
+                        type="text"
+                        id="middleName"
+                        name="middleName"
+                        value={middleName}
+                        onChange={handleMiddleNameChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName">Last Name:</label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.lastName && (
+                        <p className="text-red-500">{formErrors.lastName}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="suffix">Suffix:</label>
+                      <input
+                        type="text"
+                        id="suffix"
+                        name="suffix"
+                        value={suffix}
+                        onChange={handleSuffixChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="birthdate">Birthdate:</label>
+                      <input
+                        type="date"
+                        id="birthdate"
+                        name="birthdate"
+                        value={birthdate}
+                        onChange={handleBirthdateChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.birthdate && (
+                        <p className="text-red-500">{formErrors.birthdate}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="age">Age:</label>
+                      <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        value={age}
+                        onChange={handleAgeChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.age && (
+                        <p className="text-red-500">{formErrors.age}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="nationality">Nationality:</label>
+                      <input
+                        type="text"
+                        id="nationality"
+                        name="nationality"
+                        value={nationality}
+                        onChange={handleNationalityChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.nationality && (
+                        <p className="text-red-500">{formErrors.nationality}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="phoneNumber">Phone Number:</label>
+                      <input
+                        type="text"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        value={phoneNumber}
+                        onChange={handlePhoneNumberChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.phoneNumber && (
+                        <p className="text-red-500">{formErrors.phoneNumber}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="email">Email:</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                        required
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.email && (
+                        <p className="text-red-500">{formErrors.email}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="driverLicenseNumber">
+                        Driver License Number:
+                      </label>
+                      <input
+                        type="text"
+                        id="driverLicenseNumber"
+                        name="driverLicenseNumber"
+                        value={driverLicenseNumber}
+                        onChange={handleDriverLicenseNumberChange}
+                        className="border rounded-lg p-2 w-full"
+                      />
+                      {formErrors.driverLicenseNumber && (
+                        <p className="text-red-500">
+                          {formErrors.driverLicenseNumber}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pb-10">
+                    {/* Start Upload File */}
+                    <div>
+                      <h2 className="pt-5 font-bold text-lg">
+                        Upload Driver's License ID Photo
+                      </h2>
+                    </div>
+                    <div
+                      className={`border ${
+                        licenseIdPhoto ? "border-none" : "border-primary"
+                      }`}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                    >
+                      <div className="flex flex-col justify-center items-center">
+                        {licenseIdPhoto ? (
+                          <img
+                            src={URL.createObjectURL(licenseIdPhoto)}
+                            alt="License ID"
+                            className="h-20 w-20 mt-3 mb-2"
+                          />
+                        ) : (
+                          <img
+                            src={Upload}
+                            alt="Upload"
+                            className="h-20 w-20"
+                          />
+                        )}
+                        <p>
+                          {licenseIdPhoto ? "File Uploaded" : "Upload a File"}
+                        </p>
+                        <p>Drag and drop files here</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="my-5 mx-3"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* End Upload File */}
+                </div>
+              )}
+            </form>
+          </div>
+
+          <div className="border border-card bg-light h-max rounded-2xl sticky top-20">
+            <h2 className="text-primary text-xl px-12 pt-2 pb-4 font-bold text-center">
+              Price Breakdown
+            </h2>
+            <form action="">
+              <div className="px-3">
+                <h2 className="font-bold">Booking Duration</h2>
+                <hr className="border-t-2 border-black pb-1" />
+                <div className="flex justify-between">
+                  <p>Pick-up:</p>
+                  <p>June 28, 2023 </p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Drop-Off:</p>
+                  <p>June 30, 2023</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Total Days:</p>
+                  <p>2 Days</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-bold pb-5">Subtotal:</p>
+                  <p>Php 40,000</p>
+                </div>
+
+                <h2 className="font-bold">Other Fees</h2>
+                <hr className="border-t-2 border-black pb-1" />
+                <div className="flex justify-between">
+                  <p>Drop-Off Fee:</p>
+                  <p>Php 500</p>
+                </div>
+                <h2>Add-Ons:</h2>
+                <div className="flex justify-between">
+                  <p className="pl-3 pb-7">Cargo Protect</p>
+                  <p>Php 5,000</p>
+                </div>
+                <div className="flex justify-between pb-5">
+                  <p className="font-bold text-2xl">Total:</p>
+                  <p className="text-xl">Php 45,500</p>
+                </div>
+                <div className="text-center pb-4">
+                  <NavLink to="/finaldetails">
+                    {" "}
+                    <button
+                      className="py-1 px-10 bg-button text-white rounded-lg"
+                      onClick={handleSubmit}
+                    >
+                      Continue
+                    </button>
+                  </NavLink>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>{" "}
+      {/* end */}
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-red-500 max-w-xs mx-auto rounded-lg p-8">
+            <h2 className="text-white text-2xl font-bold mb-4">Error</h2>
+            <p className="text-white">Please choose an option.</p>
+            <button
+              className="bg-white text-red-500 px-4 py-2 rounded-lg mt-4 font-semibold"
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
