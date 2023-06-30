@@ -17,7 +17,8 @@ export const SignUp = () => {
   const [fileSizeError, setFileSizeError] = useState(false);
   const [fileImageError, setFileImageError] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imgNewname, setimgNewname] = useState(null);
+  // const [imgNewname, setimgNewname] = useState("");
+  let imgNewname;
   const handleFileChange = async () => {
     console.log(selectedFile);
     if (selectedFile) {
@@ -36,7 +37,7 @@ export const SignUp = () => {
 
         const data = await response.json();
         console.log(data); // Handle the response data as needed
-        setimgNewname(data.data.name);
+        handleRegister(data.data.name);
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -156,13 +157,13 @@ export const SignUp = () => {
     zipcode: zipcode,
     valididtype: validID,
     valididno: idNumber,
-    valididimg: imgNewname,
+
     hasdriverlicense: false,
     verified: false,
     username: firstName,
     password: password,
   };
-  const handleRegister = async () => {
+  const handleRegister = async (newImgname) => {
     try {
       let url = "http://localhost:8000/user/create";
       let method = "POST";
@@ -174,7 +175,7 @@ export const SignUp = () => {
           "x-auth-token":
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, valididimg: newImgname }),
       });
 
       if (res.ok) {
@@ -381,7 +382,7 @@ export const SignUp = () => {
     return Object.keys(errors).length === 0 && !!validIdPhoto;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     formErrors.password = "";
     formErrors.confirmPassword = "";
@@ -389,7 +390,6 @@ export const SignUp = () => {
     setFileSizeError("");
     if (validateForm()) {
       // handleFileUpload();
-      handleRegister();
       handleFileChange();
       navigate("/signin"); // Navigate to the "/finaldetails" route
     }
