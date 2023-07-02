@@ -21,6 +21,8 @@ import {
   CarDetails,
   PageNotFound,
 } from "../pages";
+import { Profile, Reservation, Support, DeleteAccount } from "../user";
+import { EditProfile } from "../user/EditProfile";
 
 export const AllRoutes = () => {
   return (
@@ -44,6 +46,12 @@ export const AllRoutes = () => {
         <Route path="bookingconfirm" element={<BookingConfirm />}></Route>
         <Route path="branches" element={<Branches />}></Route>
         <Route path="cardetails/:id" element={<CarDetails />}></Route>
+        <Route path="profile" element={<Profile />}></Route>
+        <Route path="user/reservation" element={<Reservation />}></Route>
+        <Route path="support" element={<Support />}></Route>
+        <Route path="deleteaccount" element={<DeleteAccount />}></Route>
+        <Route path="editprofile" element={<EditProfile />}></Route>
+
         <Route path="*" element={<PageNotFound />}></Route>
       </Routes>
     </div>

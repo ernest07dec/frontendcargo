@@ -8,7 +8,6 @@ export const BookingConfirm = () => {
   const [reservation, setReservation] = useState([]);
   const [userDetails, setUserDetails] = useState({});
   const [carDetails, setCarDetails] = useState({});
-  const [details, setDetails] = useState("");
   const [pickUpDate, setPickUpDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
 
@@ -21,28 +20,7 @@ export const BookingConfirm = () => {
       // alert("Please log in first to continue");
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      const url = "http://localhost:8000/car/retrieve/" + details;
-      const method = "GET";
-      const header = {
-        "Content-Type": "application/json",
-        "x-auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
-      };
-      try {
-        const response = await fetch(url, {
-          method,
-          headers: header,
-        });
-        const data = await response.json();
-        setCarDetails(data);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    fetchData();
-  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/reservation/retrieveAll";
@@ -63,11 +41,6 @@ export const BookingConfirm = () => {
             return el.userid === user;
           })[data.length - 1]
         );
-        setDetails(
-          data.filter((el) => {
-            return el.userid === user;
-          })[data.length - 1].carid
-        );
         setReturnDate(
           data
             .filter((el) => {
@@ -82,6 +55,30 @@ export const BookingConfirm = () => {
             })
             [data.length - 1].datetimestart.slice(0, 10)
         );
+        const fetchCarData = async () => {
+          const url =
+            "http://localhost:8000/car/retrieve/" +
+            data.filter((el) => {
+              return el.userid === user;
+            })[data.length - 1].carid;
+          const method = "GET";
+          const header = {
+            "Content-Type": "application/json",
+            "x-auth-token":
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+          };
+          try {
+            const response = await fetch(url, {
+              method,
+              headers: header,
+            });
+            const carData = await response.json();
+            setCarDetails(carData);
+          } catch (error) {
+            console.log("error");
+          }
+        };
+        fetchCarData();
       } catch (error) {
         console.log("error", error);
       }
@@ -104,6 +101,7 @@ export const BookingConfirm = () => {
         });
         const data = await response.json();
         setUserDetails(data);
+        console.log(data);
       } catch (error) {
         console.log("error", error);
       }
@@ -111,15 +109,13 @@ export const BookingConfirm = () => {
     fetchData();
   }, []);
 
-  // console.log(reservation);
-
   return (
     <div className="bg-shade">
       <div className="__container">
         <div className="py-32">
           <div>
             <div className="text-center py-">
-              <h2 className="text-primary text-3xl pb-2 font-bold">
+              <h2 className="text-primary text-3xl pb-2 font-bold ">
                 Hooray! Your car is RESERVED.
               </h2>
               <p className="font-semibold pb-10">
@@ -185,14 +181,7 @@ export const BookingConfirm = () => {
                 Total Rent Price
               </h2>
               <h2 className="py-5 text-center text-primary font-bold text-2xl">
-                Php{" "}
-                {carDetails.initialrateperday *
-                  ((Date.parse(reservation.datetimefinish) -
-                    Date.parse(reservation.datetimefinish)) /
-                    86400000 +
-                    1) +
-                  500 +
-                  (reservation.insurance === false ? 0 : 500)}
+                Php {reservation.totalpayment}
               </h2>
               <hr className="border-t-2 border-black" />
               <p className="font-bold text-2xl py-5  text-center">
@@ -235,10 +224,22 @@ export const BookingConfirm = () => {
                   If there are any questions, concerns, or disputes about your
                   reservation, please contact us through email,{" "}
                   <span className="text-primary">cargorentals@gmail.com,</span>{" "}
-                  or via mobile (+63) 988 123 4567) and landline (02) 846 9564).
+                  or via mobile (+63) 988 123 4567 and landline (02) 846 9564.
                   Our Customer Support line is open 24/7 to assist you anytime.
                 </p>
               </div>
+              <NavLink
+                to="/"
+                className="text-right text-primary text-lg hover:underline"
+              >
+                Back to Home
+              </NavLink>
+              <NavLink
+                to="/user/reservation"
+                className="text-right text-primary text-lg pb-5 hover:underline"
+              >
+                Check your Reservations
+              </NavLink>
             </div>
           </div>
         </div>
