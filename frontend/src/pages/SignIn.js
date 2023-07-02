@@ -96,7 +96,7 @@ export const SignIn = () => {
           </div>
 
           <div className="flex flex-col mb-4">
-            <div className="flex justify-center">
+            <div className="flex justify-between pb-5 px-3">
               <label className="inline-flex items-center">
                 <input
                   type="checkbox"
@@ -105,18 +105,17 @@ export const SignIn = () => {
                 />
                 <span className="ml-2">Remember me</span>
               </label>
+              <div className="flex justify-end">
+                <NavLink to="/contact" className="text-blue-500">
+                  Forgot password?
+                </NavLink>
+              </div>
             </div>
 
-            <div className="flex justify-end">
-              <a href="contact.html" className="text-blue-500">
-                Forgot password?
-              </a>
-            </div>
-
-            <div className="flex justify-center">
+            <div className="flex justify-center py-5">
               <NavLink
                 to="/"
-                className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                className="inline-block bg-primary hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded-lg"
                 onClick={(e) => signIn(e)}
               >
                 Sign In
@@ -129,7 +128,7 @@ export const SignIn = () => {
               Not a member?&nbsp;&nbsp;
               <Link
                 to="/signup"
-                className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                className="inline-block bg-primary hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded-lg"
               >
                 {" "}
                 Register

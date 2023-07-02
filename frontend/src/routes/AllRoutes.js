@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
+import { ContactUs } from "../pages/ContactUs";
 import {
   Home,
   About,
@@ -23,6 +24,7 @@ import {
 } from "../pages";
 import { Profile, Reservation, Support, DeleteAccount } from "../user";
 import { EditProfile } from "../user/EditProfile";
+import { ChangePassword } from "../user/ChangePassword";
 
 export const AllRoutes = () => {
   return (
@@ -39,6 +41,7 @@ export const AllRoutes = () => {
         <Route path="bridal" element={<Bridal />}></Route>
         <Route path="family" element={<Family />}></Route>
         <Route path="casual" element={<Casual />}></Route>
+        <Route path="contact" element={<ContactUs />}></Route>
         <Route path="testimonial" element={<Testimonial />}></Route>
         <Route path="driver/:id" element={<Driver />}></Route>
         <Route path="signup" element={<SignUp />}></Route>
@@ -51,6 +54,7 @@ export const AllRoutes = () => {
         <Route path="support" element={<Support />}></Route>
         <Route path="deleteaccount" element={<DeleteAccount />}></Route>
         <Route path="editprofile" element={<EditProfile />}></Route>
+        <Route path="changepassword" element={<ChangePassword />}></Route>
 
         <Route path="*" element={<PageNotFound />}></Route>
       </Routes>

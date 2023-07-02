@@ -9,9 +9,6 @@ export const Profile = () => {
   const [userDetails, setUserDetails] = useState({});
   const [userBirthday, setBirthday] = useState("");
   const user = localStorage.getItem("user");
-  if (user) {
-    console.log(user);
-  }
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/user/retrieve/" + user;

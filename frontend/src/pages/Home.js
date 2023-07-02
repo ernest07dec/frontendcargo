@@ -27,9 +27,45 @@ import bridal from "../assets/catergories/bride-car.png";
 import family from "../assets/catergories/nissan-car.png";
 import casual from "../assets/catergories/suzuki-cars.png";
 import { Carousel } from "flowbite-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const Home = () => {
+  const navigate = useNavigate();
+  const [searchPickUpDate, setSearchPickUpDate] = useState("");
+  const [searchReturnDate, setSearchReturnDate] = useState("");
+  const [Searchlocation, setSearchLocation] = useState("");
+  const [SearchcarType, setSearchCarType] = useState("");
+
+  const handlePickUpDate = (e) => {
+    setSearchPickUpDate(e.target.value);
+  };
+  const handleReturnDate = (e) => {
+    setSearchReturnDate(e.target.value);
+  };
+  const handleLocation = (e) => {
+    setSearchLocation(e.target.value);
+  };
+  const handleCartype = (e) => {
+    setSearchCarType(e.target.value);
+  };
+  const handleSubmit = (e) => {
+    if (searchPickUpDate === "" || searchReturnDate === "") {
+      e.preventDefault();
+      alert("Please input Date");
+    } else if (
+      Date.now() > Date.parse(searchPickUpDate) ||
+      Date.now() > Date.parse(searchReturnDate) ||
+      Date.parse(searchPickUpDate) > Date.parse(searchReturnDate)
+    ) {
+      e.preventDefault();
+      alert(
+        "Invalid date, Please check if you put the dates correctly, You can not book for the date today"
+      );
+    } else {
+    }
+  };
+
   return (
     <div>
       <div className="container2 mx-auto absolute top-24 sm:inset-24 md:inset-28 lg:inset-28 lg:right-10 z-10 mt-20  text-white">
@@ -71,6 +107,7 @@ export const Home = () => {
                     id="location"
                     name="location"
                     placeholder="Pick-up Branch"
+                    onChange={(e) => handleLocation(e)}
                   >
                     <option disabled value="Pick-up Branch">
                       Branch
@@ -100,6 +137,7 @@ export const Home = () => {
                     type="date"
                     id="pickupDate"
                     name="pickupDate"
+                    onChange={(e) => handlePickUpDate(e)}
                   />
                 </div>
               </div>
@@ -136,6 +174,7 @@ export const Home = () => {
                     type="date"
                     id="pickupDate"
                     name="pickupDate"
+                    onChange={(e) => handleReturnDate(e)}
                   />
                 </div>
               </div>
@@ -165,6 +204,7 @@ export const Home = () => {
                     className="rounded-lg pl-8 focus:ring-0 border-none"
                     id="carType"
                     name="carType"
+                    onChange={(e) => handleCartype(e)}
                   >
                     <option disabled defaultValue>
                       Car Type
@@ -183,7 +223,10 @@ export const Home = () => {
               </div>
 
               <div className="bg-red-600 rounded-lg flex justify-center items-center">
-                <button className="flex px-7 py-4 p-1 font-bold text-center">
+                <button
+                  className="flex px-7 py-4 p-1 font-bold text-center"
+                  onClick={(e) => handleSubmit(e)}
+                >
                   <FaSearch size="1.5rem" className="mr-1" />
                   <p>Search</p>
                 </button>

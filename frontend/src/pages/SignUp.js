@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Image
@@ -10,15 +10,35 @@ export const SignUp = () => {
   window.onload = function handleUser() {
     if (user) {
       navigate("/");
-      // alert("Please log in first to continue");
     }
   };
   const [validIdPhoto, setValidIdPhoto] = useState(null);
   const [fileSizeError, setFileSizeError] = useState(false);
   const [fileImageError, setFileImageError] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  // const [imgNewname, setimgNewname] = useState("");
-  let imgNewname;
+  const [allUsers, setAllUsers] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = "http://localhost:8000/user/retrieveAll";
+      const method = "GET";
+      const header = {
+        "Content-Type": "application/json",
+        "x-auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+      };
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: header,
+        });
+        const data = await response.json();
+        setAllUsers(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchData();
+  }, []);
   const handleFileChange = async () => {
     console.log(selectedFile);
     if (selectedFile) {
@@ -36,7 +56,7 @@ export const SignUp = () => {
         });
 
         const data = await response.json();
-        console.log(data); // Handle the response data as needed
+        // Handle the response data as needed
         handleRegister(data.data.name);
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -327,6 +347,12 @@ export const SignUp = () => {
     if (!zipcode.trim()) {
       errors.zipcode = "Zipcode is required";
     }
+    const existingEmail = allUsers.filter((el) => {
+      return el.email === email;
+    });
+    if (existingEmail[0]) {
+      errors.email = "Please choose another email";
+    }
     if (!email.trim()) {
       errors.email = "Email is required";
     } else {
@@ -384,6 +410,7 @@ export const SignUp = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     formErrors.password = "";
     formErrors.confirmPassword = "";
     setPasswordError("");

@@ -20,7 +20,7 @@ import {
   FaKey,
 } from "react-icons/fa";
 
-export const DeleteAccount = () => {
+export const ChangePassword = () => {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({});
   const user = localStorage.getItem("user");
@@ -47,17 +47,17 @@ export const DeleteAccount = () => {
     fetchData();
   }, []);
 
-  const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const [formErrors, setFormErrors] = useState({});
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleDelete = async () => {
+  const handleUpdate = async () => {
+    console.log(formErrors);
     try {
-      let url = "http://localhost:8000/user/delete/" + user;
-      let method = "DELETE";
+      let url = "http://localhost:8000/user/update/" + user;
+      let method = "PUT";
 
       const res = await fetch(url, {
         method,
@@ -66,44 +66,44 @@ export const DeleteAccount = () => {
           "x-auth-token":
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
         },
+        body: JSON.stringify({
+          set: {
+            password: newPassword,
+          },
+        }),
       });
-      console.log(res);
       if (res.ok) {
-        logOut();
-        alert("Account Successfully Deleted");
+        alert("Account Password Updated Successfully");
+        navigate("/profile");
       } else {
-        console.log("Error deleting data");
+        console.log("Error updating data");
       }
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
-  const handleMessageChange = (e) => {
-    setMessage(e.target.value);
-  };
-  const logOut = () => {
-    localStorage.clear();
-    navigate("/");
-  };
-
   const validateForm = () => {
     const errors = {};
-
-    if (!message.trim()) {
-      errors.message = "Feedback is required";
-    }
-
     if (!password.trim()) {
       errors.password = "Password is required";
     } else if (password.trim().length < 6) {
       errors.password = "Password must be at least 6 characters long";
     } else if (userDetails.password !== password) {
       errors.password = "Invalid Password";
-    } else {
-      handleDelete();
+    }
+    if (!newPassword.trim()) {
+      errors.newPassword = "New Password is required";
+    } else if (newPassword.trim().length < 6) {
+      errors.newPassword = "New Password must be at least 6 characters long";
+    } else if (userDetails.password === password && newPassword === password) {
+      errors.newPassword =
+        "New Password must be different from your last password";
     }
 
+    if (newPassword !== confirmPassword) {
+      errors.confirmPassword = "Password isn't matched";
+    }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -111,11 +111,18 @@ export const DeleteAccount = () => {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
+  const handleNewPasswordChange = (event) => {
+    setNewPassword(event.target.value);
+  };
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    validateForm();
+    if (validateForm()) {
+      handleUpdate();
+    }
   };
 
   return (
@@ -128,23 +135,10 @@ export const DeleteAccount = () => {
             </div>
             <div className="basis-[80%]">
               <div className=" mt-10 flex flex-col px-10 ">
-                <h2 className="text-2xl text-primary pb-5">Delete Account</h2>
-                <p className="pb-5 font-bold">
-                  We’re sorry to see you go! Please fill out this form so we can
-                  help you delete your account, and so we would know your
-                  feedback to help us improve our services.
-                </p>
+                <h2 className="text-2xl text-primary pb-5">Change Password</h2>
+
                 <form action="">
                   <div>
-                    <div className="flex flex-col mt-5">
-                      <label htmlFor="">Feedback:</label>
-                      <textarea
-                        className="w-[500px] h-[200px]"
-                        value={message}
-                        onChange={handleMessageChange}
-                        placeholder="Type your message..."
-                      />
-                    </div>
                     <div className="flex flex-col sm:mt-6">
                       <label htmlFor="password" className="form-label">
                         Verify Password
@@ -158,6 +152,58 @@ export const DeleteAccount = () => {
                       />
                       {formErrors.password && (
                         <p className="text-red-500">{formErrors.password}</p>
+                      )}
+                      {passwordError && (
+                        <div className="text-red-500">{passwordError}</div>
+                      )}
+                      {passwordError && (
+                        <div className="text-red-500">
+                          {passwordError ===
+                            "Password must be at least 6 characters long" &&
+                            "Password must be 6 characters"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col sm:mt-3">
+                      <label htmlFor="password" className="form-label">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={handleNewPasswordChange}
+                        id="newpassword"
+                        className="w-full lg:w-56 xl:w-80 px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+                      />
+                      {formErrors.newPassword && (
+                        <p className="text-red-500">{formErrors.newPassword}</p>
+                      )}
+                      {passwordError && (
+                        <div className="text-red-500">{passwordError}</div>
+                      )}
+                      {passwordError && (
+                        <div className="text-red-500">
+                          {passwordError ===
+                            "Password must be at least 6 characters long" &&
+                            "Password must be 6 characters"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col sm:mt-3">
+                      <label htmlFor="password" className="form-label">
+                        Confirm New Password
+                      </label>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={handleConfirmPasswordChange}
+                        id="confirmpassword"
+                        className="w-full lg:w-56 xl:w-80 px-3 py-2  border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+                      />
+                      {formErrors.confirmPassword && (
+                        <p className="text-red-500">
+                          {formErrors.confirmPassword}
+                        </p>
                       )}
                       {passwordError && (
                         <div className="text-red-500">{passwordError}</div>
