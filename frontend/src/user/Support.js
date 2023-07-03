@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import Upload from "../assets/User.png";
 import profile from "../assets/User.png";
+import { useNavigate } from "react-router-dom";
 
 import { Link, NavLink } from "react-router-dom";
 import React from "react";
@@ -20,6 +21,14 @@ import {
 } from "react-icons/fa";
 
 export const Support = () => {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
 

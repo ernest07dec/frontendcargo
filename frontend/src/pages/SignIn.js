@@ -106,7 +106,10 @@ export const SignIn = () => {
                 <span className="ml-2">Remember me</span>
               </label>
               <div className="flex justify-end">
-                <NavLink to="/contact" className="text-blue-500">
+                <NavLink
+                  to="/contact"
+                  className="text-blue-500 hover:underline"
+                >
                   Forgot password?
                 </NavLink>
               </div>
@@ -128,7 +131,7 @@ export const SignIn = () => {
               Not a member?&nbsp;&nbsp;
               <Link
                 to="/signup"
-                className="inline-block bg-primary hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded-lg"
+                className="text-cyan-600 text-xl italic font-bold hover:underline"
               >
                 {" "}
                 Register

@@ -13,10 +13,16 @@ export const Driver = () => {
       // alert("Please log in first to continue");
     }
   };
+  const [validIdPhoto, setValidIdPhoto] = useState(null);
+  const [fileSizeError, setFileSizeError] = useState(false);
+  const [fileImageError, setFileImageError] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileInputValue, setFileInputValue] = useState("");
   const [selfDrive, setSelfDrive] = useState(false);
   const [hireDriver, setHireDriver] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const path = window.location.pathname.split("/");
   const details = path[path.length - 1];
@@ -70,7 +76,6 @@ export const Driver = () => {
     };
     fetchData();
   }, []);
-  const nextLink = `/finaldetails/${carDetails._id}${window.location.search}&hasDriver=false&firstname=NA&middlename=NA&lastname=NA&suffix=NA&birthday=NA&age=NA&nationality=NA&phonenumber=NA&email=NA&driverslicensenumber=NA&imageupload=NA`;
 
   // Information
   const [firstName, setFirstName] = useState("");
@@ -86,6 +91,21 @@ export const Driver = () => {
   const [formErrors, setFormErrors] = useState({});
   const [licenseIdPhoto, setLicenseIdPhoto] = useState(null);
 
+  const nextLink = `/finaldetails/${carDetails._id}${
+    window.location.search
+  }&hasDriver=false&firstname=${
+    firstName === "" ? "NA" : firstName
+  }&middlename=${middleName === "" ? "NA" : middleName}&lastname=${
+    lastName === "" ? "NA" : lastName
+  }&suffix=${suffix === "" ? "NA" : suffix}&birthday=${
+    birthdate === "" ? "NA" : birthdate
+  }&age=${age === "" ? "NA" : age}&nationality=${
+    nationality === "" ? "NA" : nationality
+  }&phonenumber=${phoneNumber === "" ? "NA" : phoneNumber}&email=${
+    email === "" ? "NA" : email
+  }&driverslicensenumber=${
+    driverLicenseNumber === "" ? "NA" : driverLicenseNumber
+  }&imageupload=`;
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
   };
@@ -126,9 +146,37 @@ export const Driver = () => {
     setDriverLicenseNumber(event.target.value);
   };
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
+    console.log(event.target.files[0]);
+    setSelectedFile(event.target.files[0]);
+
     const file = event.target.files[0]; // Get the uploaded file
-    setLicenseIdPhoto(file); // Store the uploaded file in state
+    setUploadError(""); // Clear any previous upload error
+
+    // Perform file size validation
+    const fileSizeInBytes = file.size;
+    const fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert bytes to MB
+
+    if (file.type.startsWith("image/")) {
+      if (fileSizeInMB <= 1) {
+        setValidIdPhoto(file); // Store the file in state
+        setFileSizeError(false); // Reset the file size error state
+        setFileInputValue(event.target.value); // Store the file input value in state
+      } else {
+        setFileSizeError(true); // Set the file size error state to true
+        setTimeout(() => {
+          setFileSizeError(false); // Reset the file size error state after a timeout
+        }, 3000);
+        setFileInputValue("");
+        setValidIdPhoto("");
+      }
+    } else {
+      setFileImageError(true); // Set the image error state to true
+      setTimeout(() => {
+        setFileImageError(false); // Reset the image error state after a timeout
+      }, 3000); // Adjust the timeout duration as needed (3000 milliseconds = 3 seconds)
+      // Do not update the file input value when there is an error
+    }
   };
 
   const validateForm = () => {
@@ -171,11 +219,14 @@ export const Driver = () => {
         console.log(!licenseNumberPattern.test(driverLicenseNumber));
       }
     }
+    if (!validIdPhoto) {
+      setUploadError("Image is required");
+    }
 
     // Add validation rules for other fields...
     setFormErrors(errors);
     // Return true if the form is valid (no errors)
-    return Object.keys(errors).length === 0;
+    return Object.keys(errors).length === 0 && !!validIdPhoto;
   };
 
   const closeModal = () => {
@@ -183,18 +234,44 @@ export const Driver = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-
     if (!hireDriver && !selfDrive) {
+      event.preventDefault();
       setShowModal(true);
     } else if (selfDrive) {
-      navigate("/finaldetails");
+      navigate(nextLink + "NA");
       return;
     } else if (validateForm()) {
-      navigate("/finaldetails");
+      handleFileChange();
+      // navigate("/finaldetails");
     }
   };
+  const handleRegister = async (newImgname) => {
+    navigate(nextLink + newImgname);
+  };
+  const handleFileChange = async () => {
+    console.log(selectedFile);
+    if (selectedFile) {
+      const formDataImg = new FormData();
+      formDataImg.append("image", selectedFile);
+      console.log(formDataImg);
+      try {
+        const response = await fetch("http://localhost:8000/upload/create", {
+          method: "POST",
+          headers: {
+            "x-auth-token":
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+          },
+          body: formDataImg,
+        });
 
+        const data = await response.json();
+        // Handle the response data as needed
+        handleRegister(data.data.name);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
   const handleDragOver = (event) => {
     event.preventDefault();
   };
@@ -492,25 +569,19 @@ export const Driver = () => {
                       )}
                     </div>
                   </div>
-
-                  <div className="pb-10">
-                    {/* Start Upload File */}
-                    <div>
-                      <h2 className="pt-5 font-bold text-lg">
-                        Upload Driver's License ID Photo
-                      </h2>
-                    </div>
+                  {/* Start Upload File */}
+                  <div className="pt-10">
                     <div
                       className={`border ${
-                        licenseIdPhoto ? "border-none" : "border-primary"
+                        validIdPhoto ? "border-none" : "border-primary"
                       }`}
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                     >
                       <div className="flex flex-col justify-center items-center">
-                        {licenseIdPhoto ? (
+                        {validIdPhoto ? (
                           <img
-                            src={URL.createObjectURL(licenseIdPhoto)}
+                            src={URL.createObjectURL(validIdPhoto)}
                             alt="License ID"
                             className="h-20 w-20 mt-3 mb-2"
                           />
@@ -522,18 +593,30 @@ export const Driver = () => {
                           />
                         )}
                         <p>
-                          {licenseIdPhoto ? "File Uploaded" : "Upload a File"}
+                          {validIdPhoto ? "File Uploaded" : "Upload a File"}
                         </p>
                         <p>Drag and drop files here</p>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleFileUpload}
+                          value={fileInputValue}
                           className="my-5 mx-3"
                         />
+                        {fileSizeError && (
+                          <p className="text-red-600">
+                            File size exceeds the maximum limit of 1MB.
+                          </p>
+                        )}
+                        {fileImageError && (
+                          <p className="text-red-600">File is not an image </p>
+                        )}
+                        {uploadError && (
+                          <p className="text-red-600">{uploadError}</p>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </div>{" "}
                   {/* End Upload File */}
                 </div>
               )}
@@ -606,11 +689,14 @@ export const Driver = () => {
                     </p>
                   </div>
                   <div className="text-center pb-4">
-                    <NavLink to={user ? nextLink : "/signin"}>
-                      <button className="py-1 px-10 bg-button text-white rounded-lg">
+                    <div>
+                      <div
+                        onClick={handleSubmit}
+                        className="py-1 px-10 bg-button text-white rounded-lg cursor-pointer"
+                      >
                         Continue
-                      </button>
-                    </NavLink>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>

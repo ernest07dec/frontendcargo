@@ -24,6 +24,12 @@ export const DeleteAccount = () => {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({});
   const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/user/retrieve/" + user;

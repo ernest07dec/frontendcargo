@@ -221,6 +221,15 @@ export const Home = () => {
                   </div>
                 </div>
               </div>
+              <div className="hidden">
+                <input
+                  className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                  type="text"
+                  id="page"
+                  name="page"
+                  defaultValue="1"
+                />
+              </div>
 
               <div className="bg-red-600 rounded-lg flex justify-center items-center">
                 <button

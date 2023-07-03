@@ -1,13 +1,63 @@
 import Sidebar from "../components/User/Sidebar";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import Upload from "../assets/User.png";
 
 export const EditProfile = () => {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   const handleSubmit = (e) => {
     e.preventDefault(e);
-    validateForm();
-    console.log(validateForm());
+    if (validateForm()) {
+      handleUpdate();
+    }
+  };
+  const handleUpdate = async (e) => {
+    try {
+      let url = "http://localhost:8000/user/update/" + user;
+      let method = "PUT";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+        },
+        body: JSON.stringify({
+          set: {
+            firstname: firstName,
+            lastname: lastName,
+            middlename: middleName,
+            extension: suffix,
+            birthday: birthdate,
+            gender: gender,
+            age: age,
+            maritalstatus: civilStatus,
+            nationality: nationality,
+            street: building + municipality,
+            city: city,
+            province: province,
+            zipcode: zipcode,
+            phonenumber: phoneNumber,
+          },
+        }),
+      });
+      if (res.ok) {
+        alert("Account Profile Updated Successfully");
+        navigate("/profile");
+      } else {
+        console.log("Error updating data");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
 
   const [firstName, setFirstName] = useState("");
@@ -122,11 +172,13 @@ export const EditProfile = () => {
     if (civilStatus === "Choose Status") {
       setCivilStatusErrorMessage("Please choose a civil status");
       setCivilStatusSubmitted(true);
+      errors.civilStatus = "Please choose a civil status";
     }
 
     if (gender === "Choose Gender") {
       setGenderErrorMessage("Please choose a gender");
       setGenderSubmitted(true);
+      errors.gender = "Please choose a gender";
     }
 
     // Add validation rules for other fields...
@@ -250,9 +302,9 @@ export const EditProfile = () => {
                         <option disabled value="Choose Gender">
                           Choose Gender
                         </option>
-                        <option value="male">Male</option>
+                        <option value="Male">Male</option>
                         <option value="Female">Female</option>
-                        <option value="others">Others</option>
+                        <option value="Others">Others</option>
                       </select>
                       {genderSubmitted && genderErrorMessage && (
                         <p className="text-red-500 pb-5">
@@ -276,9 +328,9 @@ export const EditProfile = () => {
                         <option disabled value="Choose Status">
                           Choose Status
                         </option>
-                        <option value="male">Single</option>
-                        <option value="Female">Married</option>
-                        <option value="others">Complicated</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Complicated">Complicated</option>
                       </select>
                       {civilStatusSubmitted && civilStatusErrorMessage && (
                         <p className="text-red-500">Please choose a status</p>

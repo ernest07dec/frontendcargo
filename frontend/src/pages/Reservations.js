@@ -9,50 +9,31 @@ import {
   FaCarAlt,
 } from "react-icons/fa";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import CarCard from "../components/CarCArd";
 import { useEffect } from "react";
-
-import ford from "../assets/cartype/family/Ford-Ecosport-cars.png";
-import foton from "../assets/cartype/family/foton-cars.png";
-import nissan from "../assets/cartype/family/family cars-BMW X3_0.jpg";
-
-import luxury from "../assets/catergories/luxury-mercedez-benz.png";
+import { NavLink, Link } from "react-router-dom";
 
 export const Reservations = () => {
-  const navigate = useNavigate();
-  const [isCarSpecsOpen, setCarSpecsOpen] = useState(false);
-  const [isCarCategoriesOpen, setCarCategoriesOpen] = useState(false);
-  const [isTransmissionOpen, setTransmissionOpen] = useState(false);
-  const [selectedCarSpecs, setSelectedCarSpecs] = useState([]);
-  const [selectedCarCategories, setSelectedCarCategories] = useState([]);
-  const [selectedTransmission, setSelectedTransmission] = useState("");
   const [carFilter, setCarFilter] = useState([]);
+  const [totalCar, setTotalCar] = useState(0);
 
-  const [page, setPage] = useState(1);
   const path = window.location.search.split("&");
   const location = path[0].split("=")[1];
   const pickUpDate = path[1].split("=")[1];
   const pickUpTime = path[2].split("=")[1];
   const returnDate = path[3].split("=")[1];
   const returnTime = path[4].split("=")[1];
+  let page = Number(path[6].split("=")[1]);
   const carType = path[5].split("=")[1];
-  const carSpecsOptions = [
-    "Compact",
-    "SUV",
-    "Sedan",
-    "Convertible",
-    "Electric",
-    "Luxury",
-  ];
-  const carCategoriesOptions = [
-    "Luxury",
-    "Business",
-    "Bridal",
-    "Pick-up",
-    "Travel",
-    "Casual",
-  ];
+  const nextLink = window.location.search.split("&page=")[0];
+  const nextPage = () => {
+    page += 1;
+    fetchCar();
+  };
+  const prevPage = () => {
+    page -= 1;
+    fetchCar();
+  };
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/reservation/retrieveAll";
@@ -92,12 +73,17 @@ export const Reservations = () => {
               headers: header,
             });
             const data = await response.json();
+            setTotalCar(
+              data.filter((el) => {
+                return el.cartypename === carType && !filter.includes(el._id);
+              }).length
+            );
             setCarFilter(
               data
                 .filter((el) => {
                   return el.cartypename === carType && !filter.includes(el._id);
                 })
-                .splice(0 * page, 12 * page)
+                .slice(12 * (page - 1), 12 * page)
             );
           } catch (error) {
             console.log("error", error);
@@ -110,23 +96,74 @@ export const Reservations = () => {
     };
     fetchData();
   }, []);
-  const transmissionOptions = ["Automatic", "Manual"];
+  const fetchCar = async () => {
+    const url = "http://localhost:8000/reservation/retrieveAll";
+    const method = "GET";
+    const header = {
+      "Content-Type": "application/json",
+      "x-auth-token":
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+    };
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: header,
+      });
+      const data = await response.json();
+      const filterReservation = await data
+        .filter((el) => {
+          return (
+            Date.parse(el.datetimestart) > Date.parse(pickUpDate) &&
+            Date.parse(el.datetimefinish) < Date.parse(returnDate)
+          );
+        })
+        .map((el) => {
+          return el.carid;
+        });
+      const fetchCarData = async (filter) => {
+        const url = "http://localhost:8000/car/retrieveAll";
+        const method = "GET";
+        const header = {
+          "Content-Type": "application/json",
+          "x-auth-token":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.7FsnIbm2Zks_9G_4oGACqrbyMkIOGlC-5k7BCQFKFn0",
+        };
+        try {
+          const response = await fetch(url, {
+            method,
+            headers: header,
+          });
+          const data = await response.json();
+          setTotalCar(
+            data.filter((el) => {
+              return el.cartypename === carType && !filter.includes(el._id);
+            }).length
+          );
+          setCarFilter(
+            data
+              .filter((el) => {
+                return el.cartypename === carType && !filter.includes(el._id);
+              })
+              .slice(12 * (page - 1), 12 * page)
+          );
+        } catch (error) {
+          console.log("error", error);
+        }
+      };
+      fetchCarData(filterReservation);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
   const [searchPickUpDate, setSearchPickUpDate] = useState("");
   const [searchReturnDate, setSearchReturnDate] = useState("");
-  const [Searchlocation, setSearchLocation] = useState("");
-  const [SearchcarType, setSearchCarType] = useState("");
 
   const handlePickUpDate = (e) => {
     setSearchPickUpDate(e.target.value);
   };
   const handleReturnDate = (e) => {
     setSearchReturnDate(e.target.value);
-  };
-  const handleLocation = (e) => {
-    setSearchLocation(e.target.value);
-  };
-  const handleCartype = (e) => {
-    setSearchCarType(e.target.value);
   };
   const handleSubmit = (e) => {
     if (searchPickUpDate === "" || searchReturnDate === "") {
@@ -143,54 +180,6 @@ export const Reservations = () => {
       );
     } else {
     }
-  };
-
-  const handleCarSpecsToggleDropdown = (e) => {
-    e.preventDefault();
-    setCarSpecsOpen(!isCarSpecsOpen);
-  };
-
-  const handleCarCategoriesToggleDropdown = (e) => {
-    e.preventDefault();
-    setCarCategoriesOpen(!isCarCategoriesOpen);
-  };
-
-  const handleTransmissionToggleDropdown = (e) => {
-    e.preventDefault();
-    setTransmissionOpen(!isTransmissionOpen);
-  };
-
-  const handleCarSpecsChange = (event) => {
-    const { value, checked } = event.target;
-
-    if (checked) {
-      setSelectedCarSpecs((prevSelected) => [...prevSelected, value]);
-    } else {
-      setSelectedCarSpecs((prevSelected) =>
-        prevSelected.filter((spec) => spec !== value)
-      );
-    }
-  };
-
-  const handleCarCategoriesChange = (event) => {
-    const { value, checked } = event.target;
-
-    if (checked) {
-      setSelectedCarCategories((prevSelected) => [...prevSelected, value]);
-    } else {
-      setSelectedCarCategories((prevSelected) =>
-        prevSelected.filter((category) => category !== value)
-      );
-    }
-  };
-
-  const handleTransmissionChange = (event) => {
-    const { value } = event.target;
-    setSelectedTransmission(value);
-  };
-
-  const handleRentNow = () => {
-    navigate("/cardetails");
   };
 
   return (
@@ -211,7 +200,6 @@ export const Reservations = () => {
                       id="location"
                       name="location"
                       placeholder="Pick-up Branch"
-                      onChange={(e) => handleLocation(e)}
                     >
                       <option disabled value="Pick-up Branch">
                         Branch
@@ -308,7 +296,6 @@ export const Reservations = () => {
                       className="rounded-lg pl-8 focus:ring-0 border-none"
                       id="carType"
                       name="carType"
-                      onChange={(e) => handleCartype(e)}
                     >
                       <option disabled defaultValue>
                         Car Type
@@ -324,6 +311,16 @@ export const Reservations = () => {
                       <FaCarAlt size="1.5rem" className="text-primary" />
                     </div>
                   </div>
+                </div>
+
+                <div className="hidden">
+                  <input
+                    className="border-none rounded-lg focus:ring-0 p-0 pb-1"
+                    type="text"
+                    id="page"
+                    name="page"
+                    defaultValue="1"
+                  />
                 </div>
 
                 <div className="bg-red-600 rounded-lg flex justify-center items-center">
@@ -420,6 +417,41 @@ export const Reservations = () => {
             ))}
           </div>
           {/* End section of cards */}
+          <div className="flex justify-center items-center">
+            {page === 1 ? (
+              <div className="bg-slate-500 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">
+                {" "}
+                Prev
+              </div>
+            ) : (
+              <Link
+                to={
+                  "/reservation" + nextLink + "&page=" + (page - 1).toString()
+                }
+                onClick={prevPage}
+                className="bg-button hover:bg-red-300 hover:cursor-pointer text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Next
+              </Link>
+            )}
+
+            <h3 className="px-5">Page {page}</h3>
+            {(page + 1) * 12 < totalCar ? (
+              <Link
+                to={
+                  "/reservation" + nextLink + "&page=" + (page + 1).toString()
+                }
+                onClick={nextPage}
+                className="bg-button hover:bg-red-300 hover:cursor-pointer text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Next
+              </Link>
+            ) : (
+              <div className="bg-slate-500 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">
+                Next
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

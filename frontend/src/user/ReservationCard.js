@@ -1,12 +1,20 @@
 // import { FaTachometerAlt, FaCogs, FaUsers } from "react-icons/fa";
 // import luxury from "../assets/catergories/luxury-mercedez-benz.png";
 // import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 export const ReservationCard = ({ reservation }) => {
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({});
   const [carDetails, setCarDetails] = useState({});
   const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/user/retrieve/" + user;
@@ -51,7 +59,6 @@ export const ReservationCard = ({ reservation }) => {
     };
     fetchData();
   }, []);
-  //   const navigate = useNavigate();
   const handleShow = (e) => {
     if (e.target.nextSibling.className === "") {
       e.target.nextSibling.className = "hidden";

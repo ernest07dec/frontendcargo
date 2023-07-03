@@ -47,7 +47,7 @@ export const CarCard = ({ car }) => {
             <p className="font-semibold">Php {car.initialrateperday} / Day</p>
           </div>
           <div className="text-center">
-            <Link to={detailsLink + window.location.search}>
+            <Link to={detailsLink + window.location.search.split("&page=")[0]}>
               <button className="text-center p-1 bg-red-600 text-white rounded-lg px-5">
                 Rent Now
               </button>

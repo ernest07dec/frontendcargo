@@ -23,6 +23,17 @@ export const FinalDetails = () => {
   const carCategories = search[5].split("=")[1];
   const insurance = Number(search[6].split("=")[1]);
   const hasDriver = search[7].split("=")[1];
+  const firstName = search[8].split("=")[1];
+  const middlename = search[9].split("=")[1];
+  const lastname = search[10].split("=")[1];
+  const suffix = search[11].split("=")[1];
+  const birthday = search[12].split("=")[1];
+  const age = search[13].split("=")[1];
+  const nationality = search[14].split("=")[1];
+  const phoneNumber = search[15].split("=")[1];
+  const email = search[16].split("=")[1];
+  const licenseno = search[17].split("=")[1];
+  const imageupload = search[18].split("=")[1];
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   };
@@ -101,19 +112,19 @@ export const FinalDetails = () => {
     remarks: "",
     insurance: insurance === 0 ? "false" : "true",
     hasdriver: hasDriver,
-    driverfirstname: "firstName",
-    driverlastname: "lastName",
-    drivermiddlename: "middleName",
-    driverextension: "suffix",
-    driverbirthday: "birthdate",
-    driverage: "age",
-    drivernationality: "nationality",
-    driverphonenumber: "phoneNumber",
-    driveremail: "email",
-    driverlicenseno: "licenseno",
-    driverlicenseimg: "licenseimg",
+    driverfirstname: firstName,
+    driverlastname: lastname,
+    drivermiddlename: middlename,
+    driverextension: suffix,
+    driverbirthday: birthday,
+    driverage: age,
+    drivernationality: nationality,
+    driverphonenumber: phoneNumber,
+    driveremail: email,
+    driverlicenseno: licenseno,
+    driverlicenseimg: imageupload,
   };
-
+  console.log(formData);
   const handleBook = async () => {
     try {
       let url = "http://localhost:8000/reservation/create";

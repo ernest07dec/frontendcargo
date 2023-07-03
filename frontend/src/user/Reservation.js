@@ -2,11 +2,19 @@ import Sidebar from "../components/User/Sidebar";
 import { useState } from "react";
 import { useEffect } from "react";
 import ReservationCard from "./ReservationCard";
+import { useNavigate } from "react-router-dom";
 
 import Upload from "../assets/User.png";
 
 export const Reservation = () => {
+  const navigate = useNavigate();
   const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   const [allUserReservations, setAllUserReservations] = useState([]);
 
   useEffect(() => {

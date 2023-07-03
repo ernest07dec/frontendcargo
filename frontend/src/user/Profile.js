@@ -2,13 +2,21 @@ import Sidebar from "../components/User/Sidebar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Upload from "../assets/User.png";
 
 export const Profile = () => {
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({});
   const [userBirthday, setBirthday] = useState("");
   const user = localStorage.getItem("user");
+  window.onload = function handleUser() {
+    if (!user) {
+      navigate("/signin");
+      // alert("Please log in first to continue");
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/user/retrieve/" + user;

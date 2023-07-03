@@ -394,12 +394,12 @@ export const SignUp = () => {
 
       return;
     }
-    if (!validIdPhoto) {
-      setUploadError("Image is required");
-    }
     if (gender === "Choose Gender") {
       setGenderErrorMessage("Please choose a gender");
       setGenderSubmitted(true);
+    }
+    if (!validIdPhoto) {
+      setUploadError("Image is required");
     }
 
     // Add validation rules for other fields...

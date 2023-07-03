@@ -20,7 +20,6 @@ export const BookingConfirm = () => {
       // alert("Please log in first to continue");
     }
   };
-
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/reservation/retrieveAll";
@@ -39,28 +38,40 @@ export const BookingConfirm = () => {
         setReservation(
           data.filter((el) => {
             return el.userid === user;
-          })[data.length - 1]
+          })[
+            data.filter((el) => {
+              return el.userid === user;
+            }).length - 1
+          ]
         );
         setReturnDate(
           data
             .filter((el) => {
               return el.userid === user;
             })
-            [data.length - 1].datetimefinish.slice(0, 10)
+            [
+              data.filter((el) => {
+                return el.userid === user;
+              }).length - 1
+            ].datetimefinish.slice(0, 10)
         );
         setPickUpDate(
           data
             .filter((el) => {
               return el.userid === user;
             })
-            [data.length - 1].datetimestart.slice(0, 10)
+            [
+              data.filter((el) => {
+                return el.userid === user;
+              }).length - 1
+            ].datetimestart.slice(0, 10)
         );
         const fetchCarData = async () => {
           const url =
             "http://localhost:8000/car/retrieve/" +
             data.filter((el) => {
               return el.userid === user;
-            })[data.length - 1].carid;
+            })[0].carid;
           const method = "GET";
           const header = {
             "Content-Type": "application/json",
@@ -85,6 +96,7 @@ export const BookingConfirm = () => {
     };
     fetchData();
   }, []);
+  // console.log(hasDriver);
   useEffect(() => {
     const fetchData = async () => {
       const url = "http://localhost:8000/user/retrieve/" + user;
@@ -171,10 +183,10 @@ export const BookingConfirm = () => {
                   {reservation.insurance === "false" ? "No" : "Yes"}
                 </p>
                 <p>
-                  Driving Preference:{" "}
-                  {reservation.hasDriver === "false"
+                  Driving Preference:
+                  {reservation.hasdriver === "false"
                     ? "Self-Drive"
-                    : "Have a Driver"}
+                    : "Has a Driver"}
                 </p>
               </div>
               <h2 className="py-5 text-center text-primary font-bold text-2xl">
