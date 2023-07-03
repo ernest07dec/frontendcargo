@@ -4,72 +4,10 @@ import { useState } from "react";
 import Upload from "../assets/User.png";
 
 export const EditProfile = () => {
-  const [validIdPhoto, setValidIdPhoto] = useState(null);
-  const [fileSizeError, setFileSizeError] = useState(false);
-  const [fileImageError, setFileImageError] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  const handleFileUpload = async (event) => {
-    console.log(event.target.files[0]);
-    setSelectedFile(event.target.files[0]);
-
-    const file = event.target.files[0]; // Get the uploaded file
-    setUploadError(""); // Clear any previous upload error
-
-    // Perform file size validation
-    const fileSizeInBytes = file.size;
-    const fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert bytes to MB
-
-    if (file.type.startsWith("image/")) {
-      if (fileSizeInMB <= 1) {
-        setValidIdPhoto(file); // Store the file in state
-        setFileSizeError(false); // Reset the file size error state
-        setFileInputValue(event.target.value); // Store the file input value in state
-      } else {
-        setFileSizeError(true); // Set the file size error state to true
-        setTimeout(() => {
-          setFileSizeError(false); // Reset the file size error state after a timeout
-        }, 3000);
-        setFileInputValue("");
-        setValidIdPhoto("");
-      }
-    } else {
-      setFileImageError(true); // Set the image error state to true
-      setTimeout(() => {
-        setFileImageError(false); // Reset the image error state after a timeout
-      }, 3000); // Adjust the timeout duration as needed (3000 milliseconds = 3 seconds)
-      // Do not update the file input value when there is an error
-    }
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0]; // Get the dropped file
-
-    if (file.type.startsWith("image/")) {
-      const fileSizeInBytes = file.size;
-      const fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert bytes to MB
-
-      if (fileSizeInMB <= 1) {
-        setValidIdPhoto(file); // Store the dropped file in state
-        setFileSizeError(false); // Reset the file size error state
-      } else {
-        setFileSizeError(true); // Set the file size error state to true
-        setTimeout(() => {
-          setFileSizeError(false); // Reset the file size error state after a timeout
-        }, 3000); // Adjust the timeout duration as needed (3000 milliseconds = 3 seconds)
-      }
-    } else {
-      setFileImageError(true); // Set the image error state to true
-      setTimeout(() => {
-        setFileImageError(false); // Reset the image error state after a timeout
-      }, 3000); // Adjust the timeout duration as needed (3000 milliseconds = 3 seconds)
-    }
-  };
-
-  // Perform file size validation
-  const handleDragOver = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault(e);
+    validateForm();
+    console.log(validateForm());
   };
 
   const [firstName, setFirstName] = useState("");
@@ -91,19 +29,7 @@ export const EditProfile = () => {
   const [province, setProvince] = useState("");
   const [zipcode, setZipcode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [uploadError, setUploadError] = useState("");
   const [formErrors, setFormErrors] = useState({});
-  const [fileInputValue, setFileInputValue] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [idNumberError, setIdNumberError] = useState("");
-  const [validID, setValidID] = useState("ID Type (e.g TIN)");
-  const [validIDSubmitted, setValidIDSubmitted] = useState(false);
-  const [validIDErrorMessage, setValidIDErrorMessage] = useState("");
-  const [submittedData, setSubmittedData] = useState(null);
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -156,54 +82,57 @@ export const EditProfile = () => {
     setPhoneNumber(event.target.value);
   };
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  };
+  const validateForm = () => {
+    const errors = {};
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
-
-  const handleValidIDChange = (event) => {
-    setValidID(event.target.value);
-    setValidIDErrorMessage("");
-  };
-
-  const validateIDNumber = () => {
-    if (!idNumber.trim()) {
-      setIdNumberError("ID Number is required");
-      setValidIDSubmitted(false);
-    } else if (validID === "SSS") {
-      if (!/^\d{2}-\d{7}-\d$/.test(idNumber)) {
-        setIdNumberError("Invalid SSS ID format");
-        setValidIDSubmitted(false);
-      } else {
-        setIdNumberError("");
-        setValidIDSubmitted(true);
-      }
-    } else if (validID === "Philhealth") {
-      if (!/^\d{2}-\d{9}-\d$/.test(idNumber)) {
-        setIdNumberError("Invalid Philhealth ID format");
-        setValidIDSubmitted(false);
-      } else {
-        setIdNumberError("");
-        setValidIDSubmitted(true);
-      }
-    } else if (validID === "TIN") {
-      if (!/^\d{3}-\d{3}-\d{3}-\d{3}/.test(idNumber)) {
-        setIdNumberError("Invalid TIN ID format");
-        setValidIDSubmitted(false);
-      } else {
-        setIdNumberError("");
-        setValidIDSubmitted(true);
-      }
-    } else {
-      setIdNumberError("");
-      setValidIDSubmitted(false);
+    if (!firstName.trim()) {
+      errors.firstName = "First Name is required";
     }
+    if (!lastName.trim()) {
+      errors.lastName = "Last Name is required";
+    }
+    if (!birthdate.trim()) {
+      errors.birthdate = "Birthdate is required";
+    }
+    if (!age.trim()) {
+      errors.age = "Age is required";
+    }
+    if (!nationality.trim()) {
+      errors.nationality = "Nationality is required";
+    }
+    if (!phoneNumber.trim()) {
+      errors.phoneNumber = "PhoneNumber is required";
+    }
+    if (!building.trim()) {
+      errors.building = "Building / Blk is required";
+    }
+    if (!municipality.trim()) {
+      errors.municipality = "Municipality is required";
+    }
+    if (!city.trim()) {
+      errors.city = "City is required";
+    }
+    if (!province.trim()) {
+      errors.province = "Province is required";
+    }
+    if (!zipcode.trim()) {
+      errors.zipcode = "Zipcode is required";
+    }
+
+    if (civilStatus === "Choose Status") {
+      setCivilStatusErrorMessage("Please choose a civil status");
+      setCivilStatusSubmitted(true);
+    }
+
+    if (gender === "Choose Gender") {
+      setGenderErrorMessage("Please choose a gender");
+      setGenderSubmitted(true);
+    }
+
+    // Add validation rules for other fields...
+    setFormErrors(errors);
+    // Return true if the form is valid (no errors)
+    return Object.keys(errors).length === 0;
   };
 
   return (
@@ -472,74 +401,17 @@ export const EditProfile = () => {
                       )}
                     </div>
                   </div>
-                  <div className="container grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div className="flex flex-col mt-3">
-                      <label className="form-label">Upload Valid ID</label>
-                      <select
-                        value={validID}
-                        onChange={handleValidIDChange}
-                        className="w-full  lg:w-56  px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-                      >
-                        <option disabled value="ID Type (e.g TIN)">
-                          ID Type (e.g TIN)
-                        </option>
-                        <option value="SSS">SSS</option>
-                        <option value="Philhealth">Philhealth</option>
-                        <option value="TIN">TIN</option>
-                      </select>
-                      {validIDSubmitted && validIDErrorMessage && (
-                        <p className="text-red-500">{validIDErrorMessage}</p>
-                      )}
-                    </div>
 
-                    <div className="flex flex-col sm:mt-12 md:mt-3">
-                      <input
-                        type="text"
-                        className="w-full lg:w-56  px-3 py-2 md:mt-6 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="ID Number"
-                        value={idNumber}
-                        onChange={(event) => setIdNumber(event.target.value)}
-                        onBlur={validateIDNumber}
-                      />
-                      {idNumberError && !validIDSubmitted && (
-                        <p className="text-red-500">{idNumberError}</p>
-                      )}
-                    </div>
-                  </div>
-                  {/* Start Upload File */}
-                  <div className="pt-5">
-                    <div onDragOver={handleDragOver} onDrop={handleDrop}>
-                      <div className="flex flex-col justify-center items-center">
-                        {validIdPhoto ? (
-                          <img
-                            src={URL.createObjectURL(validIdPhoto)}
-                            alt="License ID"
-                            className="h-20 w-20 mt-3 mb-2"
-                          />
-                        ) : (
-                          <img
-                            src={Upload}
-                            alt="Upload"
-                            className="h-20 w-20"
-                          />
-                        )}
-                        <p>{validIdPhoto ? "File Uploaded" : "Update"}</p>
-
-                        {fileSizeError && (
-                          <p className="text-red-600">
-                            File size exceeds the maximum limit of 1MB.
-                          </p>
-                        )}
-                        {fileImageError && (
-                          <p className="text-red-600">File is not an image </p>
-                        )}
-                        {uploadError && (
-                          <p className="text-red-600">{uploadError}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>{" "}
                   {/* End Upload File */}
+                  <div className="flex justify-end py-5 px-16">
+                    <button
+                      to="/"
+                      className="inline-block bg-primary hover:bg-cyan-900 text-white font-bold py-2 px-6 rounded-lg"
+                      onClick={(e) => handleSubmit(e)}
+                    >
+                      Update Profile
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
