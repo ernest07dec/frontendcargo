@@ -93,7 +93,7 @@ export const Driver = () => {
 
   const nextLink = `/finaldetails/${carDetails._id}${
     window.location.search
-  }&hasDriver=false&firstname=${
+  }&hasDriver=${hireDriver}&firstname=${
     firstName === "" ? "NA" : firstName
   }&middlename=${middleName === "" ? "NA" : middleName}&lastname=${
     lastName === "" ? "NA" : lastName

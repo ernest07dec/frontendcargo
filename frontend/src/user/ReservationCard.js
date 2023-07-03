@@ -67,6 +67,7 @@ export const ReservationCard = ({ reservation }) => {
       e.target.nextSibling.className = "";
       e.target.className = "text-primary cursor-pointer flex";
     }
+    // console.log(reservation.hasdriver === "false");
   };
 
   return (
